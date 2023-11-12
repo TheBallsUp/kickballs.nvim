@@ -52,18 +52,9 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.wildignorecase = true
 
--- Ripgrep (if available)
-if vim.fn.executable("rg") == 1 then
-  vim.opt.grepformat = "%f:%l:%c:%m"
-  vim.opt.grepprg = "rg --vimgrep -i"
-end
-
 -- Undo history
 vim.opt.undodir = vim.fs.joinpath(vim.fn.stdpath("state"), "undodir")
 vim.opt.undofile = true
-
--- Fallback colorscheme
-vim.cmd.colorscheme("habamax")
 
 -- Diagnotics
 vim.diagnostic.config({
@@ -90,9 +81,6 @@ vim.g.mapleader = " "
 local map = function(modes, keys, action, desc)
   vim.keymap.set(modes, keys, action, { silent = true, desc = desc })
 end
-
--- File explorer
-map("n", "<Leader>e", vim.cmd.Ex, "Opens netrw.")
 
 -- Usually you don't want to yank single characters.
 -- For the rare situations where you do need to, you can `vd`.
@@ -152,12 +140,8 @@ map("t", "<C-CR>", "<CR>")
 --
 -- You can use this to reload your config while you're editing it without having to restart nvim.
 map("n", "<Leader>x", function()
-  if vim.o.filetype == "vim" then
-    vim.cmd.write()
-    vim.cmd.source("%")
-  elseif vim.o.filetype == "lua" then
-    vim.cmd.write()
-    vim.cmd.luafile("%")
+  if vim.o.filetype == "vim" or vim.o.filetype == "lua" then
+    vim.cmd("write | source %")
   end
 end, "Re-executes the current vim / lua file.")
 
@@ -209,6 +193,10 @@ if catppuccin_installed then
     flavour = "mocha",
   })
 
+  -- neovim also comes with a bunch of builtin colorschemes. Run `:colorscheme ` and hit tab!
+  -- Most of them are pretty hideous but `habamax` and `quiet` are pretty good.
+  --
+  -- Catppuccin is better though :)
   vim.cmd.colorscheme("catppuccin")
 end
 
@@ -290,7 +278,6 @@ if oil_installed then
   -- See `:help oil-options` if you want to change any defaults.
   oil.setup()
 
-  -- Override the netrw keymap as we won't need it anymore :)
   map("n", "<Leader>e", oil.open, "Opens Oil.")
 end
 
