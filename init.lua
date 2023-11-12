@@ -94,9 +94,9 @@ end
 -- File explorer
 map("n", "<Leader>e", vim.cmd.Ex, "Opens netrw.")
 
--- These two override (in my opinion) bad defaults.
+-- Usually you don't want to yank single characters.
+-- For the rare situations where you do need to, you can `vd`.
 map("n", "x", "\"_x", "Deletes a single character without yanking it.")
-map("n", "Y", "y$", "Makes `Y` behave more like `D` and `C`.")
 
 -- Yanking and pasting using the system clipboard.
 --
