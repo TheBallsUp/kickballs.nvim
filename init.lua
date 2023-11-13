@@ -96,8 +96,7 @@ map("n", "x", "\"_x", "Deletes a single character without yanking it.")
 
 map({ "n", "v" }, "<Leader>y", "\"+y", "Yanks to the system clipboard.")
 map({ "n", "v" }, "<Leader>p", "\"+p", "Pastes from the system clipboard.")
-map({ "n", "v" }, "<Leader>P", "\"+P",
-  "Pastes from the system clipboard without yanking the deleted text.")
+map({ "n", "v" }, "<Leader>P", "\"+P", "Pastes from the system clipboard without yanking the deleted text.")
 
 -- Stay in visual mode when indenting / dedenting text
 map("x", ">", ">gv", "Indents text in visual mode without losing visual selection.")
