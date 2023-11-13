@@ -29,6 +29,13 @@ vim.opt.wildoptions = { "fuzzy", "pum" }
 vim.opt.path = { ".", "**" }
 
 -- UI
+
+-- 'colorcolumn' is a visual guide that shows you how long your lines are.
+-- If 'textwidth' is not already set, we default to a value of 101.
+-- Otherwise we take the current 'textwidth' value + 1 so you can type until the colorcolumn but
+-- without crossing it.
+--
+-- This is just visual and is supposed to help you; it does not have any effect on formatting!
 if vim.o.textwidth == 0 then
   vim.opt.colorcolumn = "101"
 else
@@ -138,14 +145,14 @@ map("t", "<S-BS>", "<BS>")
 map("t", "<C-BS>", "<C-w>")
 map("t", "<C-CR>", "<CR>")
 
--- Execute the current config file.
+-- Save and execute the current config file.
 --
 -- You can use this to reload your config while you're editing it without having to restart nvim.
 map("n", "<Leader>x", function()
   if vim.o.filetype == "vim" or vim.o.filetype == "lua" then
     vim.cmd("write | source %")
   end
-end, "Re-executes the current vim / lua file.")
+end, "Saves and re-executes the current vim / lua file.")
 
 ---}}}
 
@@ -222,7 +229,9 @@ end
 ---
 ---   <https://github.com/nvim-treesitter/nvim-treesitter/wiki/Windows-support#which-c-compiler-will-be-used>
 ---
---- And tell treesitter to use zig for compiling parsers.
+--- And tell treesitter to use zig for compiling parsers:
+---
+---   require("nvim-treesitter.install").compilers = { "zig" }
 ---
 --- To make sure everything goes smoothly I also recommend deleting old failed parsers before trying
 --- to recompile them with zig. To do that, simply delete the following directory starting at the
@@ -238,17 +247,10 @@ if treesitter_installed then
   -- See `:help nvim-treesitter-quickstart` for more information.
   treesitter.setup({
     -- You can list parser you definitely want installed here.
-    -- Most of these are recommended because they are used in documentation such as `:help` so you
-    -- might get errors if you don't install them. `vimdoc`, `bash` and `python` for example are all
-    -- used in `:help`, so you should have them installed.
-    --
-    -- You can add whatever other languages you regularly work with here as well. For a full list of
-    -- supported languages refer to this:
+    -- You can add whatever languages you regularly work with here. For a full list of supported
+    -- languages refer to this:
     --
     --   <https://github.com/nvim-treesitter/nvim-treesitter/#supported-languages>
-    --
-    -- I added Rust, JavaScript and TypeScript as examples, but feel free to put whatever languages
-    -- you want in here :)
     ensure_installed = {
       -- These are highly recommended because they're used in various `:help` documents.
       "vim", "vimdoc", "lua", "query", "markdown", "bash", "python",
@@ -424,10 +426,6 @@ if lspconfig_installed then
             vim.fs.joinpath(vim.fn.stdpath("config"), "lua"),
           },
         },
-
-        diagnostics = {
-          globals = { "vim" },
-        },
       },
     },
   })
@@ -446,11 +444,11 @@ end
 ---
 --- I have reduced it to the minimum here, with a single source only for LSP.
 ---
---- If you want custom snippets you also need to install a Snippet engine like LuaSnip:
+--- If you want custom snippets you also need to install a Snippet engine like LuaSnip as well as an
+--- appropriate source:
 ---
 ---   <https://github.com/L3MON4D3/LuaSnip>
----
---- As well as an appropriate source.
+---   <https://github.com/saadparwaiz1/cmp_luasnip>
 
 balls.register({ url = "https://github.com/hrsh7th/nvim-cmp.git" })
 balls.register({ url = "https://github.com/hrsh7th/cmp-nvim-lsp.git" })

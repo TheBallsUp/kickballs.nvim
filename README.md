@@ -26,5 +26,9 @@ chose a different directory (like `kickballs`) you need to set `NVIM_APPNAME` be
 neovim.
 
 ```sh
+# Linux
 $ NVIM_APPNAME=kickballs nvim
+
+# Windows (powershell)
+$ $env:NVIM_APPNAME = 'kickballs'
 ```
