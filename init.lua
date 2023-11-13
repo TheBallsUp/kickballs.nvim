@@ -86,6 +86,9 @@ end
 -- For the rare situations where you do need to, you can `vd`.
 map("n", "x", "\"_x", "Deletes a single character without yanking it.")
 
+map("n", "j", "gj", "`j` but it respects soft line wraps.")
+map("n", "k", "gk", "`k` but it respects soft line wraps.")
+
 -- Yanking and pasting using the system clipboard.
 --
 -- If you're using WSL make sure your Windows clipboard is actually accessible from within WSL.
