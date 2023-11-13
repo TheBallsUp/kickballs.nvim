@@ -85,16 +85,19 @@ vim.g.mapleader = " "
 --- Wrapper function for custom keymaps.
 ---
 --- See `:help vim.keymap.set()` for more information.
-local map = function(modes, keys, action, desc)
-  vim.keymap.set(modes, keys, action, { silent = true, desc = desc })
+local map = function(modes, keys, action, desc, opts)
+  opts = vim.F.if_nil(opts, {})
+
+  vim.keymap.set(modes, keys, action, vim.tbl_extend("force", { silent = true, desc = desc }, opts))
 end
 
 -- Usually you don't want to yank single characters.
 -- For the rare situations where you do need to, you can `vd`.
 map("n", "x", "\"_x", "Deletes a single character without yanking it.")
 
-map("n", "j", "gj", "`j` but it respects soft line wraps.")
-map("n", "k", "gk", "`k` but it respects soft line wraps.")
+-- Move up/down while respecting soft line wraps.
+map("n", "j", "v:count == 0 ? 'gj' : 'j'", "`j` but it respects soft line wraps.", { expr = true })
+map("n", "k", "v:count == 0 ? 'gk' : 'k'", "`k` but it respects soft line wraps.", { expr = true })
 
 -- Yanking and pasting using the system clipboard.
 --
