@@ -237,17 +237,24 @@ local treesitter_installed, treesitter = pcall(require, "nvim-treesitter.configs
 if treesitter_installed then
   -- See `:help nvim-treesitter-quickstart` for more information.
   treesitter.setup({
+    -- You can list parser you definitely want installed here.
+    -- Most of these are recommended because they are used in documentation such as `:help` so you
+    -- might get errors if you don't install them. `vimdoc`, `bash` and `python` for example are all
+    -- used in `:help`, so you should have them installed.
+    --
+    -- You can add whatever other languages you regularly work with here as well. For a full list of
+    -- supported languages refer to this:
+    --
+    --   <https://github.com/nvim-treesitter/nvim-treesitter/#supported-languages>
+    --
+    -- I added Rust, JavaScript and TypeScript as examples, but feel free to put whatever languages
+    -- you want in here :)
     ensure_installed = {
-      "c",
-      "lua",
-      "vim",
-      "vimdoc",
-      "query",
-      "markdown",
-      "bash",
-      "python",
-      "comment",
-      "rust",
+      -- These are highly recommended because they're used in various `:help` documents.
+      "vim", "vimdoc", "lua", "query", "markdown", "bash", "python",
+
+      -- These are just some example languages :)
+      "rust", "javascript", "typescript",
     },
 
     auto_install = true,
