@@ -169,7 +169,7 @@ end, "Saves and re-executes the current vim / lua file.")
 local balls_path = vim.fs.joinpath(vim.fn.stdpath("config"), "/pack/balls/start/balls.nvim")
 
 if not vim.uv.fs_stat(balls_path) then
-  local command = { "git", "clone", "https://github.com/AlphaKeks/balls.nvim.git", balls_path }
+  local command = { "git", "clone", "https://github.com/TheBallsUp/balls.nvim.git", balls_path }
   local opts = { text = true }
   local result = vim.system(command, opts):wait()
 
