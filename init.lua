@@ -10,12 +10,12 @@
 --- installed. After it's done it will tell you to run `:BallsInstall` to install your plugins.
 --- After your plugins are installed you need to restart neovim for them to load.
 
----{{{ Options
+--- Options
 ---
 --- If you want to find out more about any of these, simply run `:help '<option>'`.
 --- For example, if you don't know what the `autoindent` option does, run `:help 'autoindent'`.
 
--- Indentation
+--- Indentation
 vim.opt.autoindent = true
 vim.opt.breakindent = true
 vim.opt.breakindentopt = { shift = 2, list = 2 }
@@ -24,18 +24,18 @@ vim.opt.shiftwidth = 4
 vim.opt.tabstop = vim.o.shiftwidth -- Make sure 'tabstop' and 'shiftwidth' have the same value
 vim.opt.wrap = true
 
--- Command completion
+--- Command completion
 vim.opt.wildoptions = { "fuzzy", "pum" }
 vim.opt.path = { ".", "**" }
 
--- UI
+--- UI
 
--- 'colorcolumn' is a visual guide that shows you how long your lines are.
--- If 'textwidth' is not already set, we default to a value of 101.
--- Otherwise we take the current 'textwidth' value + 1 so you can type until the colorcolumn but
--- without crossing it.
---
--- This is just visual and is supposed to help you; it does not have any effect on formatting!
+--- 'colorcolumn' is a visual guide that shows you how long your lines are.
+--- If 'textwidth' is not already set, we default to a value of 101.
+--- Otherwise we take the current 'textwidth' value + 1 so you can type until the colorcolumn but
+--- without crossing it.
+---
+--- This is just visual and is supposed to help you; it does not have any effect on formatting!
 if vim.o.textwidth == 0 then
   vim.opt.colorcolumn = "101"
 else
@@ -52,26 +52,24 @@ vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.termguicolors = true
 
--- Search
+--- Search
 vim.opt.hlsearch = false
 vim.opt.incsearch = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.wildignorecase = true
 
--- Undo history
-vim.opt.undodir = vim.fs.joinpath(vim.fn.stdpath("state"), "undodir")
+--- Undo history
+vim.opt.undodir = vim.fs.joinpath(vim.fn.stdpath("state") --[[@as string]], "undodir")
 vim.opt.undofile = true
 
--- Diagnotics
+--- Diagnotics
 vim.diagnostic.config({
   underline = false,
   severity_sort = true,
 })
 
----}}}
-
----{{{ Keymaps
+--- Keymaps
 
 --- This is your leader key.
 ---
@@ -86,42 +84,45 @@ vim.g.mapleader = " "
 ---
 --- See `:help vim.keymap.set()` for more information.
 local map = function(modes, keys, action, desc, opts)
-  opts = vim.F.if_nil(opts, {})
+  local default_opts = { silent = true, desc = desc }
 
-  vim.keymap.set(modes, keys, action, vim.tbl_extend("force", { silent = true, desc = desc }, opts))
+  opts = vim.F.if_nil(opts, {})
+  opts = vim.tbl_extend("force", default_opts, opts)
+
+  vim.keymap.set(modes, keys, action, opts)
 end
 
--- Usually you don't want to yank single characters.
--- For the rare situations where you do need to, you can `vd`.
+--- Usually you don't want to yank single characters.
+--- For the rare situations where you do need to, you can `vd`.
 map("n", "x", "\"_x", "Deletes a single character without yanking it.")
 
--- Move up/down while respecting soft line wraps.
+--- Move up/down while respecting soft line wraps.
 map("n", "j", "v:count == 0 ? 'gj' : 'j'", "`j` but it respects soft line wraps.", { expr = true })
 map("n", "k", "v:count == 0 ? 'gk' : 'k'", "`k` but it respects soft line wraps.", { expr = true })
 
--- Yanking and pasting using the system clipboard.
---
--- If you're using WSL make sure your Windows clipboard is actually accessible from within WSL.
--- See `:help clipboard-wsl` for more information.
---
--- If you're on Linux make sure to install either `xclip` or `wl-clipboard` (depending on whether
--- you use X11 or Wayland).
+--- Yanking and pasting using the system clipboard.
+---
+--- If you're using WSL make sure your Windows clipboard is actually accessible from within WSL.
+--- See `:help clipboard-wsl` for more information.
+---
+--- If you're on Linux make sure to install either `xclip` or `wl-clipboard` (depending on whether
+--- you use X11 or Wayland).
 
 map({ "n", "v" }, "<Leader>y", "\"+y", "Yanks to the system clipboard.")
 map({ "n", "v" }, "<Leader>p", "\"+p", "Pastes from the system clipboard.")
 map({ "n", "v" }, "<Leader>P", "\"+P", "Pastes from the system clipboard without yanking the deleted text.")
 
--- Stay in visual mode when indenting / dedenting text
+--- Stay in visual mode when indenting / dedenting text
 map("x", ">", ">gv", "Indents text in visual mode without losing visual selection.")
 map("x", "<", "<gv", "Dedents text in visual mode without losing visual selection.")
 
--- Move lines around
+--- Move lines around
 map("n", "<A-j>", ":m .+1<CR>==", "Moves the current line down by 1.")
 map("n", "<A-k>", ":m .-2<CR>==", "Moves the current line up by 1.")
 map("x", "<A-j>", ":m '>+1<CR>=gv", "Moves the current line down by 1.")
 map("x", "<A-k>", ":m '<-2<CR>=gv", "Moves the current line up by 1.")
 
--- Navigate various lists
+--- Navigate various lists
 map("n", "[q", ":cprev<CR>", "Jumps to the previous entry in the quickfix list.")
 map("n", "]q", ":cnext<CR>", "Jumps to the next entry in the quickfix list.")
 map("n", "[Q", ":cfirst<CR>", "Jumps to the first entry in the quickfix list.")
@@ -134,13 +135,13 @@ map("n", "[d", vim.diagnostic.goto_prev, "Jumps back one diagnostic message.")
 map("n", "]d", vim.diagnostic.goto_next, "Jumps forward one diagnostic message.")
 map("n", "gl", vim.diagnostic.open_float, "Opens a floating window with diagnostics from the current line.")
 
--- Navigate between windows
+--- Navigate between windows
 map({ "n", "v" }, "<C-h>", "<cmd>wincmd h<CR>", "Moves 1 window left.")
 map({ "n", "v" }, "<C-j>", "<cmd>wincmd j<CR>", "Moves 1 window down.")
 map({ "n", "v" }, "<C-k>", "<cmd>wincmd k<CR>", "Moves 1 window up.")
 map({ "n", "v" }, "<C-l>", "<cmd>wincmd l<CR>", "Moves 1 window right.")
 
--- Better defaults for terminal mode
+--- Better defaults for terminal mode
 map("t", "<C-]>", "<C-\\><C-n>", "Goes from terminal mode to normal mode.")
 map("t", "<S-Space>", "<Space>")
 map("t", "<C-Space>", "<Space>")
@@ -148,26 +149,25 @@ map("t", "<S-BS>", "<BS>")
 map("t", "<C-BS>", "<C-w>")
 map("t", "<C-CR>", "<CR>")
 
--- Save and execute the current config file.
---
--- You can use this to reload your config while you're editing it without having to restart nvim.
+--- Save and execute the current config file.
+---
+--- You can use this to reload your config while you're editing it without having to restart nvim.
 map("n", "<Leader>x", function()
   if vim.o.filetype == "vim" or vim.o.filetype == "lua" then
     vim.cmd("write | source %")
   end
 end, "Saves and re-executes the current vim / lua file.")
 
----}}}
+--- Plugin manager
 
----{{{ Plugins
+--- This makes sure balls.nvim (your plugin manager) is installed.
+---
+--- See `:help balls.nvim`.
+local config_path = vim.fn.stdpath("config") --[[@as string]]
+local balls_path = vim.fs.joinpath(config_path, "pack", "balls", "start", "balls.nvim")
 
----{{{ Plugin manager
-
--- This makes sure balls.nvim (your plugin manager) is installed.
---
--- See `:help balls.nvim`.
-local balls_path = vim.fs.joinpath(vim.fn.stdpath("config"), "/pack/balls/start/balls.nvim")
-
+--- This is currently an incorrect warning and will hopefully go away when 0.10 releases.
+--- @diagnostic disable-next-line
 if not vim.uv.fs_stat(balls_path) then
   local command = { "git", "clone", "https://github.com/TheBallsUp/balls.nvim.git", balls_path }
   local opts = { text = true }
@@ -181,16 +181,14 @@ if not vim.uv.fs_stat(balls_path) then
   vim.notify("Installed balls.nvim! Run `:BallsInstall` to install your plugins!")
 end
 
-local ok, balls = pcall(require, "balls")
+local balls_installed, balls = pcall(require, "balls")
 
-if not ok then
-  vim.notify("balls.nvim not found. Plugins are disabled!")
+if not balls_installed then
+  vim.notify("balls.nvim not found. Plugins are disabled!", vim.log.levels.WARN)
   return
 end
 
----}}}
-
----{{{ Colorscheme
+--- Colorscheme
 
 balls.register({
   url = "https://github.com/catppuccin/nvim.git",
@@ -212,9 +210,7 @@ if catppuccin_installed then
   vim.cmd.colorscheme("catppuccin")
 end
 
---}}}
-
----{{{ Treesitter
+--- Treesitter
 ---
 --- Treesitter is responsible for better syntax highlighting, indentation, folding, and more!
 --- The way it is setup it will install any missing parsers for the current file automatically.
@@ -247,6 +243,9 @@ balls.register({ url = "https://github.com/nvim-treesitter/nvim-treesitter.git" 
 local treesitter_installed, treesitter = pcall(require, "nvim-treesitter.configs")
 
 if treesitter_installed then
+  -- Uncomment this line if you want to use zig for compiling parsers:
+  -- require("nvim-treesitter.install").compilers = { "zig" }
+
   -- See `:help nvim-treesitter-quickstart` for more information.
   treesitter.setup({
     -- You can list parser you definitely want installed here.
@@ -274,9 +273,7 @@ if treesitter_installed then
   })
 end
 
----}}}
-
----{{{ File explorer
+--- File explorer
 ---
 --- The default file explorer that ships with vim and neovim is decent, but oil is just simply
 --- better.
@@ -295,9 +292,7 @@ if oil_installed then
   map("n", "<Leader>e", oil.open, "Opens Oil.")
 end
 
----}}}
-
----{{{ Fuzzy Finder
+--- Fuzzy Finder
 ---
 --- Telescope can fuzzy find a lot of things. Type `:Telescope ` and hit tab to get an idea of how
 --- many things!
@@ -330,9 +325,7 @@ if plenary_installed and telescope_installed then
   map("n", "<Leader>fs", pickers.lsp_workspace_symbols, "[F]ind [S]ymbols")
 end
 
----}}}
-
----{{{ LSP
+--- LSP
 ---
 --- LSP is a protocol. neovim implements this protocol. The protocol consists of a client-server
 --- relationship, where neovim is the client. If you want to get "language support" for
@@ -345,51 +338,51 @@ end
 --- servers are currently attached to the buffer. If something looks off in there you can use
 --- `:LspLog` to check the logs for any warnings or errors.
 
+-- This autocommand will run when any language server attaches to a buffer.
+-- It's a good place to put common configuration that you want to apply to all your servers.
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("kickballs_lsp_attach", { clear = true }),
+  callback = function(event)
+    -- Yet another keymap wrapper. This time for creating keymaps that only work in the current
+    -- buffer. We don't want to map LSP functionality globally as it could cause errors when you
+    -- try to use them without a language server attached.
+    local bufmap = function(modes, keys, action, desc)
+      vim.keymap.set(modes, keys, action, { buffer = event.buf, desc = desc })
+    end
+
+    bufmap("n", "gd", vim.lsp.buf.definition, "[G]oto [D]efinition")
+    bufmap("n", "gD", vim.lsp.buf.type_definition, "[G]oto Type [D]efinition")
+    bufmap("n", "gr", vim.lsp.buf.rename, "[R]ename symbol")
+    bufmap("n", "gR", vim.lsp.buf.references, "[G]oto [R]eferences")
+    bufmap("n", "gi", vim.lsp.buf.implementation, "[G]oto [I]mplementations")
+    bufmap("n", "ga", vim.lsp.buf.code_action, "Code [A]ctions")
+
+    local client = vim.lsp.get_client_by_id(event.data.client_id)
+    assert(client, "LSP client crashed?")
+
+    -- Formatting on save
+    if client.server_capabilities.documentFormattingProvider then
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        buffer = event.buf,
+        group = vim.api.nvim_create_augroup("kickballs_format_on_save_b_" .. tostring(event.buf), {
+          clear = true,
+        }),
+        callback = function(ev)
+          vim.lsp.buf.format({
+            bufnr = ev.buf,
+            id = client.id,
+          })
+        end,
+      })
+    end
+  end,
+})
+
 balls.register({ url = "https://github.com/neovim/nvim-lspconfig.git" })
 
 local lspconfig_installed, lspconfig = pcall(require, "lspconfig")
 
 if lspconfig_installed then
-  -- This autocommand will run when any language server attaches to a buffer.
-  -- It's a good place to put common configuration that you want to apply to all your servers.
-  vim.api.nvim_create_autocmd("LspAttach", {
-    group = vim.api.nvim_create_augroup("kickballs_lsp_attach", { clear = true }),
-    callback = function(event)
-      -- Yet another keymap wrapper. This time for creating keymaps that only work in the current
-      -- buffer. We don't want to map LSP functionality globally as it could cause errors when you
-      -- try to use them without a language server attached.
-      local bufmap = function(modes, keys, action, desc)
-        vim.keymap.set(modes, keys, action, { buffer = event.buf, desc = desc })
-      end
-
-      bufmap("n", "gd", vim.lsp.buf.definition, "[G]oto [D]efinition")
-      bufmap("n", "gD", vim.lsp.buf.type_definition, "[G]oto Type [D]efinition")
-      bufmap("n", "gr", vim.lsp.buf.rename, "[R]ename symbol")
-      bufmap("n", "gR", vim.lsp.buf.references, "[G]oto [R]eferences")
-      bufmap("n", "gi", vim.lsp.buf.implementation, "[G]oto [I]mplementations")
-      bufmap("n", "ga", vim.lsp.buf.code_action, "Code [A]ctions")
-
-      local client = vim.lsp.get_client_by_id(event.data.client_id)
-      assert(client, "LSP client crashed?")
-
-      -- Formatting on save
-      if client.server_capabilities.documentFormattingProvider then
-        vim.api.nvim_create_autocmd("BufWritePre", {
-          buffer = event.buf,
-          group = vim.api.nvim_create_augroup("kickballs_format_on_save_b_" .. tostring(event.buf), {
-            clear = true,
-          }),
-          callback = function(event)
-            vim.lsp.buf.format({
-              bufnr = event.buf,
-              id = client.id,
-            })
-          end,
-        })
-      end
-    end,
-  })
-
   -- These are your LSP servers. They are external programs that you need to install on your system.
   -- You can find a list of supported servers here:
   --
@@ -397,9 +390,7 @@ if lspconfig_installed then
   --
   -- As well as links to documentation.
   local servers = { "rust_analyzer", "tsserver" }
-
   local capabilities = vim.lsp.protocol.make_client_capabilities()
-
   local cmp_installed, cmp = pcall(require, "cmp_nvim_lsp")
 
   if cmp_installed then
@@ -421,12 +412,21 @@ if lspconfig_installed then
       Lua = {
         workspace = {
           checkThirdParty = false,
+
+          -- These are directories you want lua_ls to scan.
+          --
+          -- You should at least keep `vim.env.VIMRUNTIME` as that will give you hover info,
+          -- diagnostics, and completion for `vim.*` items.
           library = {
             -- neovim core
             vim.env.VIMRUNTIME,
 
+            -- balls.nvim
+            vim.fs.joinpath(balls_path, "lua"),
+            vim.fs.joinpath(balls_path, "plugin"),
+
             -- your own config
-            vim.fs.joinpath(vim.fn.stdpath("config"), "lua"),
+            vim.fs.joinpath(config_path, "lua"),
           },
         },
       },
@@ -434,9 +434,7 @@ if lspconfig_installed then
   })
 end
 
----}}}
-
----{{{ Completion
+--- Completion
 ---
 --- nvim-cmp is a completion *engine*. This means that it is responsible for wiring different
 --- *sources* together so they appear in a nice menu. If you want LSP completion, you need to
@@ -528,9 +526,7 @@ if cmp_installed then
   })
 end
 
----}}}
-
----{{{ Commenting
+--- Commenting
 ---
 --- This allows you to comment out entire lines or ranges determined by a motion.
 --- The basic keymaps are `gc` and `gcc`.
@@ -547,9 +543,7 @@ if comment_installed then
   comment.setup()
 end
 
----}}}
-
----{{{ Statusline
+--- Statusline
 ---
 --- This just gives you some nice information at the bottom of the screen :)
 
@@ -565,9 +559,3 @@ if lualine_installed then
     },
   })
 end
-
----}}}
-
----}}}
-
---- vim: foldmethod=marker foldlevel=0
