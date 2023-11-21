@@ -168,7 +168,7 @@ local balls_path = vim.fs.joinpath(config_path, "pack", "balls", "start", "balls
 
 --- This is currently an incorrect warning and will hopefully go away when 0.10 releases.
 --- @diagnostic disable-next-line
-if not vim.uv.fs_stat(balls_path) then
+if vim.uv.fs_stat(balls_path) == nil then
   local command = { "git", "clone", "https://github.com/TheBallsUp/balls.nvim.git", balls_path }
   local opts = { text = true }
   local result = vim.system(command, opts):wait()
