@@ -162,26 +162,34 @@ end, "Saves and re-executes the current vim / lua file.")
 
 --- This makes sure balls.nvim (your plugin manager) is installed.
 ---
---- See `:help balls.nvim`.
+--- See `:help balls`.
 local config_path = vim.fn.stdpath("config") --[[@as string]]
 local balls_path = vim.fs.joinpath(config_path, "pack", "balls", "start", "balls.nvim")
 
 --- This is currently an incorrect warning and will hopefully go away when 0.10 releases.
 --- @diagnostic disable-next-line
 if vim.uv.fs_stat(balls_path) == nil then
-  local command = { "git", "clone", "https://github.com/TheBallsUp/balls.nvim.git", balls_path }
-  local opts = { text = true }
-  local result = vim.system(command, opts):wait()
+  local command = {
+    "git",
+    "clone",
+    "--depth",
+    "1",
+    "https://github.com/TheBallsUp/balls.nvim",
+    balls_path,
+  }
+
+  local result = vim.system(command):wait()
 
   if result.code ~= 0 then
-    error("Failed to install balls.nvim! " .. vim.inspect(result))
+    error("Failed to install balls.nvim: " .. result.stderr)
   end
 
+  vim.notify("Installed balls.nvim! Run `:BallsInstall` to install your plugins.")
   vim.cmd.packloadall()
-  vim.notify("Installed balls.nvim! Run `:BallsInstall` to install your plugins!")
+  vim.cmd.helptags(vim.fs.joinpath(balls_path, "doc"))
 end
 
-local balls_installed, balls = pcall(require, "balls")
+local balls_installed, Balls = pcall(require, "balls")
 
 if not balls_installed then
   vim.notify("balls.nvim not found. Plugins are disabled!", vim.log.levels.WARN)
@@ -190,8 +198,7 @@ end
 
 --- Colorscheme
 
-balls.register({
-  url = "https://github.com/catppuccin/nvim.git",
+Balls:register("https://github.com/catppuccin/nvim", {
   name = "catppuccin",
 })
 
@@ -238,7 +245,7 @@ end
 ---
 --- Then try to compile the parsers again.
 
-balls.register({ url = "https://github.com/nvim-treesitter/nvim-treesitter.git" })
+Balls:register("https://github.com/nvim-treesitter/nvim-treesitter")
 
 local treesitter_installed, treesitter = pcall(require, "nvim-treesitter.configs")
 
@@ -281,7 +288,7 @@ end
 --- It lets you edit the filesystem like a buffer, which means you can use your familiar vim motions
 --- and do bulk operations really efficiently. It's really intuitive.
 
-balls.register({ url = "https://github.com/stevearc/oil.nvim.git" })
+Balls:register("https://github.com/stevearc/oil.nvim")
 
 local oil_installed, oil = pcall(require, "oil")
 
@@ -300,8 +307,8 @@ end
 --- I have set a few keymaps below for the pickers you'll use most commonly. They follow mneumonics,
 --- so feel free to change them to keymaps that feel more intuitive to you.
 
-balls.register({ url = "https://github.com/nvim-lua/plenary.nvim.git" })
-balls.register({ url = "https://github.com/nvim-telescope/telescope.nvim.git" })
+Balls:register("https://github.com/nvim-lua/plenary.nvim")
+Balls:register("https://github.com/nvim-telescope/telescope.nvim")
 
 local plenary_installed = pcall(require, "plenary")
 local telescope_installed, telescope = pcall(require, "telescope")
@@ -378,7 +385,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
-balls.register({ url = "https://github.com/neovim/nvim-lspconfig.git" })
+Balls:register("https://github.com/neovim/nvim-lspconfig")
 
 local lspconfig_installed, lspconfig = pcall(require, "lspconfig")
 
@@ -451,8 +458,8 @@ end
 ---   <https://github.com/L3MON4D3/LuaSnip>
 ---   <https://github.com/saadparwaiz1/cmp_luasnip>
 
-balls.register({ url = "https://github.com/hrsh7th/nvim-cmp.git" })
-balls.register({ url = "https://github.com/hrsh7th/cmp-nvim-lsp.git" })
+Balls:register("https://github.com/hrsh7th/nvim-cmp")
+Balls:register("https://github.com/hrsh7th/cmp-nvim-lsp")
 
 local cmp_installed, cmp = pcall(require, "cmp")
 
@@ -534,7 +541,7 @@ end
 --- `gcc` will comment out the current line.
 --- Both of them are toggles.
 
-balls.register({ url = "https://github.com/numToStr/Comment.nvim.git" })
+Balls:register("https://github.com/numToStr/Comment.nvim")
 
 local comment_installed, comment = pcall(require, "Comment")
 
@@ -547,7 +554,7 @@ end
 ---
 --- This just gives you some nice information at the bottom of the screen :)
 
-balls.register({ url = "https://github.com/nvim-lualine/lualine.nvim.git" })
+Balls:register("https://github.com/nvim-lualine/lualine.nvim")
 
 local lualine_installed, lualine = pcall(require, "lualine")
 
