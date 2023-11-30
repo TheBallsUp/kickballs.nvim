@@ -368,7 +368,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     assert(client, "LSP client crashed?")
 
     -- Formatting on save
-    if client.server_capabilities.documentFormattingProvider then
+    if client.supports_method("textDocument/formatting", { bufnr = event.buf }) then
       vim.api.nvim_create_autocmd("BufWritePre", {
         buffer = event.buf,
         group = vim.api.nvim_create_augroup("kickballs_format_on_save_b_" .. tostring(event.buf), {
